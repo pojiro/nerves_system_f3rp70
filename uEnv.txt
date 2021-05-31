@@ -1,0 +1,17 @@
+go_boot=setenv bootargs "console=ttyPS0,115200 log_buf_len=131072 rootwait panic=10 ${vmopt} root=${rootdev}" && bootz 0x02000000 - 0x02A00000
+
+chk_model=mw.b 0x08000000 0xe0 1 && cmp.b 0x08000000 0xe000a064 1 && setenv ymodel 1r;\
+          mw.b 0x08000000 0xe1 1 && cmp.b 0x08000000 0xe000a064 1 && setenv ymodel 2l && setenv vmopt "vmalloc=600MB"
+
+set_sddev=if fatinfo mmc 0;then setenv sddev 0;\
+        elif fatinfo mmc 1;then setenv sddev 1;\
+        else                    setenv sddev x;\
+          fi;\
+        echo boot device is mmc ${sddev}
+
+set_root=setenv rootdev "/dev/mmcblk${sddev}p2"
+
+ld_img=fatload mmc ${sddev}:1 0x02000000 /zImage
+ld_dtb=fatload mmc ${sddev}:1 0x02A00000 /f3rp7x_${ymodel}.dtb && echo dtb is f3rp7x_${ymodel}.dtb
+
+autoboot=sf probe 0 0 0;run chk_model;run set_sddev;run set_root;run ld_img;run ld_dtb;run go_boot
