@@ -3,7 +3,8 @@
 This is the base Nerves System configuration for the F3RP70,
 [e-RT3 Products, OS-free CPU module](https://www.yokogawa.com/solutions/products-platforms/control-system/ert3-embedded-controller/ert3-products/ert3-products-cpu/).
 
-
+![F3RP70 image](assets/images/F3RP70.png)
+<br><sup>[Image is provided by Yokogawa Electric Corporation](https://www.yokogawa.com/)</sup>
 
 | Feature              | Description                                                 |
 | -------------------- | ----------------------------------------------------------- |
