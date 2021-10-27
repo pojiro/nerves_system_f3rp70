@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.1
+
+This release fixes [a bug](https://github.com/pojiro/nerves_system_f3rp70/issues/4) in v0.3.0 that blocked the Erlang VM starting.
+
 ## v0.3.0
 
 This release updates to Buildroot 2021.08.1 and OTP 24.1.2.
