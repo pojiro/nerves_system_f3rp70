@@ -4,9 +4,7 @@ defmodule NervesSystemF3RP70.MixProject do
   @github_organization "pojiro"
   @app :nerves_system_f3rp70
   @source_url "https://github.com/#{@github_organization}/#{@app}"
-  @version Path.join(__DIR__, "VERSION")
-           |> File.read!()
-           |> String.trim()
+  @version "0.3.2"
 
   def project do
     [
@@ -18,7 +16,11 @@ defmodule NervesSystemF3RP70.MixProject do
       description: description(),
       package: package(),
       deps: deps(),
-      aliases: [loadconfig: [&bootstrap/1], docs: ["docs", &copy_images/1]],
+      aliases: [
+        loadconfig: [&bootstrap/1],
+        docs: ["docs", &copy_images/1],
+        test_version_match: [&test_version_match/1]
+      ],
       docs: docs(),
       preferred_cli_env: %{
         docs: :docs,
@@ -134,6 +136,18 @@ defmodule NervesSystemF3RP70.MixProject do
       apply(Mix, :target, [:target])
     else
       System.put_env("MIX_TARGET", "target")
+    end
+  end
+
+  defp test_version_match(_args) do
+    version = Path.join(__DIR__, "VERSION") |> File.read!() |> String.trim()
+
+    if @version != version do
+      IO.puts(
+        "The version(#{@version}) of mix.exs does not match the version(#{version}) of VERSION."
+      )
+
+      exit({:shutdown, 1})
     end
   end
 end

@@ -1,0 +1,26 @@
+env:
+  OTP_VERSION: 24.2.1
+  ELIXIR_VERSION: 1.12.3
+
+# based https://github.com/erlef/setup-beam
+
+on: pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{env.OTP_VERSION}}
+          elixir-version: ${{env.ELIXIR_VERSION}}
+
+      # dependabot cannot evaluate below code,
+      # `@version Path.join(__DIR__, "VERSION") |> File.read!() |> String.trim() on mix.exs
+      #
+      # so we have to manage version number on two files, mix.exs and VERSION.
+      # this test confirm the matching version.
+      - name: test version matches between mix.exs and VERSION
+        run: mix test_version_match
