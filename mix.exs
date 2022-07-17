@@ -4,7 +4,7 @@ defmodule NervesSystemF3RP70.MixProject do
   @github_organization "pojiro"
   @app :nerves_system_f3rp70
   @source_url "https://github.com/#{@github_organization}/#{@app}"
-  @version "0.3.2"
+  @version "0.4.0"
 
   def project do
     [

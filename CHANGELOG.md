@@ -12,6 +12,14 @@ follows:
    releases, and Linux kernel updates. They're also made to fix bugs and add
    features to the build infrastructure.
 
+## v0.4.0
+
+* Changes
+  * update: [nerves_system_br](https://github.com/nerves-project/nerves_system_br) version from 1.17.3 to 1.20.3
+    * Buildroot 2022.05
+    * Erlang/OTP 25.0.2
+  * update: [nerves](https://github.com/nerves-project/nerves) version from 1.7.11 to 1.8.0
+
 ## v0.3.2
 
 This release updates Erlang/OTP from 24.1.2 to 24.1.4.
