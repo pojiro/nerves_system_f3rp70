@@ -4,29 +4,23 @@ defmodule NervesSystemF3RP70.MixProject do
   @github_organization "pojiro"
   @app :nerves_system_f3rp70
   @source_url "https://github.com/#{@github_organization}/#{@app}"
-  @version "0.4.2"
+  @version Path.join(__DIR__, "VERSION") |> File.read!() |> String.trim()
 
   def project do
     [
       app: @app,
       version: @version,
-      elixir: "~> 1.6",
+      # Because we're using OTP 27, we need to enforce Elixir 1.17 or later.
+      elixir: "~> 1.17",
       compilers: Mix.compilers() ++ [:nerves_package],
       nerves_package: nerves_package(),
       description: description(),
       package: package(),
       deps: deps(),
       aliases: [
-        loadconfig: [&bootstrap/1],
-        docs: ["docs", &copy_images/1],
-        test_version_match: [&test_version_match/1]
+        loadconfig: [&bootstrap/1]
       ],
-      docs: docs(),
-      preferred_cli_env: %{
-        docs: :docs,
-        "hex.build": :docs,
-        "hex.publish": :docs
-      }
+      docs: docs()
     ]
   end
 
@@ -38,6 +32,10 @@ defmodule NervesSystemF3RP70.MixProject do
     set_target()
     Application.start(:nerves_bootstrap)
     Mix.Task.run("loadconfig", args)
+  end
+
+  def cli do
+    [preferred_envs: %{docs: :docs, "hex.build": :docs, "hex.publish": :docs}]
   end
 
   defp nerves_package do
@@ -66,9 +64,9 @@ defmodule NervesSystemF3RP70.MixProject do
 
   defp deps do
     [
-      {:nerves, "~> 1.6.0 or ~> 1.7.4 or ~> 1.8.0", runtime: false},
-      {:nerves_system_br, "1.20.3", runtime: false},
-      {:nerves_toolchain_armv7_nerves_linux_gnueabihf, "~> 1.4.2", runtime: false},
+      {:nerves, "~> 1.11.1 or ~> 1.12", runtime: false},
+      {:nerves_system_br, "1.31.6", runtime: false},
+      {:nerves_toolchain_armv7_nerves_linux_gnueabihf, "~> 14.2.0", runtime: false},
       {:nerves_system_linter, "~> 0.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.22", only: :docs, runtime: false}
     ]
@@ -84,6 +82,7 @@ defmodule NervesSystemF3RP70.MixProject do
     [
       extras: ["README.md", "CHANGELOG.md"],
       main: "readme",
+      assets: %{"assets" => "./assets"},
       source_ref: "v#{@version}",
       source_url: @source_url,
       skip_undefined_reference_warnings_on: ["CHANGELOG.md"]
@@ -119,15 +118,15 @@ defmodule NervesSystemF3RP70.MixProject do
     ]
   end
 
-  # Copy the images referenced by docs, since ex_doc doesn't do this.
-  defp copy_images(_) do
-    File.cp_r("assets", "doc/assets")
+  defp build_runner_opts() do
+    # Download source files first to get download errors right away.
+    [make_args: primary_site() ++ ["source", "all", "legal-info"]]
   end
 
-  defp build_runner_opts() do
+  defp primary_site() do
     case System.get_env("BR2_PRIMARY_SITE") do
       nil -> []
-      primary_site -> [make_args: ["BR2_PRIMARY_SITE=#{primary_site}"]]
+      primary_site -> ["BR2_PRIMARY_SITE=#{primary_site}"]
     end
   end
 
@@ -136,18 +135,6 @@ defmodule NervesSystemF3RP70.MixProject do
       apply(Mix, :target, [:target])
     else
       System.put_env("MIX_TARGET", "target")
-    end
-  end
-
-  defp test_version_match(_args) do
-    version = Path.join(__DIR__, "VERSION") |> File.read!() |> String.trim()
-
-    if @version != version do
-      IO.puts(
-        "The version(#{@version}) of mix.exs does not match the version(#{version}) of VERSION."
-      )
-
-      exit({:shutdown, 1})
     end
   end
 end
